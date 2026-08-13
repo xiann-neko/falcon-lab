@@ -1,4 +1,4 @@
-import type { QuizQuestion, ContentModule, ContentDomain } from './types'
+import type { QuizQuestion } from './types'
 
 // This test verifies that the type interfaces compile correctly.
 // If this file compiles, all type definitions are valid TypeScript.
