@@ -53,3 +53,30 @@ describe('DomainCard', () => {
     expect(screen.getByRole('link')).toHaveAttribute('href', '/ltr')
   })
 })
+
+import { waitFor } from '@testing-library/react'
+import 'fake-indexeddb/auto'
+import { db } from '../../db'
+import { DueReviewCard } from './DueReviewCard'
+
+describe('DueReviewCard', () => {
+  beforeEach(async () => {
+    await db.delete()
+    await db.open()
+  })
+
+  it('shows "No reviews due" when queue is empty', async () => {
+    render(<MemoryRouter><DueReviewCard /></MemoryRouter>)
+    await waitFor(() => expect(screen.getByText(/No reviews due/i)).toBeInTheDocument())
+  })
+
+  it('shows due count and links to /review when items are due', async () => {
+    const past = new Date(Date.now() - 86400000).toISOString()
+    await db.spacedRepetition.add({ questionId: 'q1', moduleId: 'm1', dueDate: past, retryCount: 0 })
+    await db.spacedRepetition.add({ questionId: 'q2', moduleId: 'm1', dueDate: past, retryCount: 0 })
+
+    render(<MemoryRouter><DueReviewCard /></MemoryRouter>)
+    await waitFor(() => expect(screen.getByText(/2 questions ready/i)).toBeInTheDocument())
+    expect(screen.getByRole('link')).toHaveAttribute('href', '/review')
+  })
+})
