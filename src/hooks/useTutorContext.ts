@@ -70,7 +70,7 @@ export function useTutorContext(): TutorContextState {
 
       const recentEntries = Array.from(latestByQuestion.values())
       const quizCorrect = recentEntries.filter(e => e.isCorrect).length
-      const quizTotal = recentEntries.length > 0 ? recentEntries.length : mod.quiz.length
+      const quizTotal = mod.quiz.length
 
       const wrongEntries = recentEntries.filter(e => !e.isCorrect)
       const recentWrongAnswers: WrongAnswer[] = wrongEntries.flatMap(entry => {
