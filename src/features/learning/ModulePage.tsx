@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getModule } from '../../content'
 import { db } from '../../db'
@@ -17,6 +17,12 @@ export function ModulePage() {
   const { moduleId } = useParams<{ moduleId: string }>()
   const navigate = useNavigate()
   const mod = moduleId ? getModule(moduleId) : undefined
+
+  useEffect(() => {
+    if (moduleId) {
+      db.appState.put({ key: 'currentModuleId', value: moduleId })
+    }
+  }, [moduleId])
 
   const [phase,          setPhase]          = useState<Phase>('concepts')
   const [quizResult,     setQuizResult]     = useState<QuizResult | null>(null)
