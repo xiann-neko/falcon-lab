@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Falcon Lab</title>
+    <script>
+      // Restore the original path after a GitHub Pages 404 redirect
+      (function() {
+        var redirect = new URLSearchParams(window.location.search).get('r');
+        if (redirect) {
+          var cleanUrl = window.location.origin + '/falcon-lab' + decodeURIComponent(redirect);
+          window.history.replaceState(null, '', cleanUrl);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
