@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Falcon Lab</title>
+  <script>
+    // Encode the path so GitHub Pages 404 redirects back to the SPA.
+    // The app reads the hash on load and replaces it with the real path.
+    var path = window.location.pathname.replace('/falcon-lab', '') || '/';
+    window.location.replace('/falcon-lab/?r=' + encodeURIComponent(path));
+  </script>
+</head>
+<body></body>
+</html>
