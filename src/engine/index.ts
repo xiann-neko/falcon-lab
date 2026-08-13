@@ -13,6 +13,8 @@ export type {
 export { calculateCompetency }  from './competency'
 export type { CompetencyParams } from './competency'
 
+export { CompetencyLevel } from '../db/schema'
+
 export {
   SR_RETIREMENT_COUNT,
   scheduleDueDate,

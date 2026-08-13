@@ -1,3 +1,5 @@
+import type { SpacedRepetitionItem } from '../db/schema'
+
 /** Number of correct retries before a spaced repetition item is retired from the queue. */
 export const SR_RETIREMENT_COUNT = 3
 
@@ -46,7 +48,7 @@ export function createSrItem(
   questionId: string,
   moduleId: string,
   from: Date = new Date(),
-): { questionId: string; moduleId: string; dueDate: string; retryCount: number } {
+): Omit<SpacedRepetitionItem, 'id'> {
   return {
     questionId,
     moduleId,

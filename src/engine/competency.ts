@@ -1,4 +1,4 @@
-import { CompetencyLevel } from '../db/index'
+import { CompetencyLevel } from '../db/schema'
 
 export interface CompetencyParams {
   quizScore:      number | null   // 0–100, or null if not yet attempted

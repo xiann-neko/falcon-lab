@@ -1,5 +1,6 @@
 /**
- * Calculate the readiness score for a single module (0–100).
+ * Weighted readiness score for a single module.
+ * Weights: quiz 20% / challenge 35% / scenario 45%.
  *
  * Weights (from design spec):
  *   - Module quiz completed:       20%
@@ -14,6 +15,12 @@
  * The scenarioScore for a module is derived from the track-level scenario result
  * (100 = passed, 0 = failed / not attempted). Plan 3 distributes the track scenario
  * result to all modules in that track when writing competency records.
+ *
+ * PLAN 4 NOTE: A module without a CQL or playbook challenge (challenge score null)
+ * caps at 65 — quiz 100 + scenario 100 = (100*0.20) + (0*0.35) + (100*0.45) = 65.
+ * This is intentional: the weights reflect the relative importance of each activity.
+ * Plan 4 should display "challenge not yet available" when challenge is absent so
+ * learners understand why their domain readiness cannot reach 100.
  */
 export function moduleReadinessScore(
   quizScore:      number | null,
