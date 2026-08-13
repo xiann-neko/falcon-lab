@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getTrackScenario, getTrack } from '../../content'
 import { db } from '../../db'
-import { calculateCompetency, CompetencyLevel } from '../../engine'
+import { calculateCompetency } from '../../engine'
 import type { ScenarioDecision } from '../../db/schema'
 import { ScenarioRunner } from './ScenarioRunner'
 

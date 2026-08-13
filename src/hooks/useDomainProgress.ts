@@ -10,7 +10,7 @@ import { getDomainModules } from '../content'
 export function useDomainProgress(domainId: string): CompetencyRecord[] {
   const [records, setRecords] = useState<CompetencyRecord[]>([])
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     let cancelled = false
     const moduleIds = getDomainModules(domainId).map(m => m.id)
     if (moduleIds.length === 0) {

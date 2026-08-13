@@ -1,6 +1,6 @@
 import { renderHook, act, waitFor } from '@testing-library/react'
 import { db } from '../db'
-import { CompetencyLevel } from '../db/schema'
+import { CompetencyLevel } from '../engine'
 import { useDomainProgress } from './useDomainProgress'
 
 describe('useDomainProgress', () => {
