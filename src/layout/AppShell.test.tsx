@@ -1,6 +1,13 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
+import 'fake-indexeddb/auto'
+import { db } from '../db'
 import AppShell, { NAV_ITEMS } from './AppShell'
+
+beforeEach(async () => {
+  await db.delete()
+  await db.open()
+})
 
 function renderShell(initialPath = '/') {
   return render(
@@ -18,10 +25,10 @@ test('renders all 7 navigation labels in the document', () => {
   })
 })
 
-test('Dashboard page content is shown at root path', () => {
+test('Dashboard page content is shown at root path', async () => {
   renderShell('/')
-  // The dashboard placeholder renders an h2 with "Dashboard"
-  expect(screen.getByRole('heading', { name: /dashboard/i })).toBeInTheDocument()
+  // The dashboard renders an h1 with "Dashboard" once useAllProgress hook resolves
+  await waitFor(() => expect(screen.getByRole('heading', { name: /dashboard/i })).toBeInTheDocument())
 })
 
 test('SIEM page content is shown at /siem', () => {
