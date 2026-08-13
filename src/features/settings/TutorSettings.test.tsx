@@ -18,7 +18,7 @@ describe('TutorSettings', () => {
   it('does not show API key input in clipboard mode', async () => {
     render(<TutorSettings />)
     await waitFor(() => {
-      expect(screen.queryByPlaceholderText(/sk-ant/i)).not.toBeInTheDocument()
+      expect(screen.queryByLabelText(/^api key$/i)).not.toBeInTheDocument()
     })
   })
 
@@ -27,7 +27,7 @@ describe('TutorSettings', () => {
     await waitFor(() => screen.getByRole('radio', { name: /api key mode/i }))
     fireEvent.click(screen.getByRole('radio', { name: /api key mode/i }))
     await waitFor(() => {
-      expect(screen.getByPlaceholderText(/sk-ant/i)).toBeInTheDocument()
+      expect(screen.getByLabelText(/^api key$/i)).toBeInTheDocument()
       expect(screen.getByRole('combobox', { name: /model/i })).toBeInTheDocument()
     })
   })
@@ -45,8 +45,8 @@ describe('TutorSettings', () => {
   it('persists API key when typed', async () => {
     await db.appState.put({ key: 'tutorMode', value: 'apikey' })
     render(<TutorSettings />)
-    await waitFor(() => screen.getByPlaceholderText(/sk-ant/i))
-    fireEvent.change(screen.getByPlaceholderText(/sk-ant/i), { target: { value: 'sk-ant-test' } })
+    await waitFor(() => screen.getByLabelText(/^api key$/i))
+    fireEvent.change(screen.getByLabelText(/^api key$/i), { target: { value: 'sk-ant-test' } })
     await waitFor(async () => {
       const entry = await db.appState.get('tutorApiKey')
       expect(entry?.value).toBe('sk-ant-test')

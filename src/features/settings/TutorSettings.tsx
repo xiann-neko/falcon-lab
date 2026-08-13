@@ -24,7 +24,6 @@ export function TutorSettings() {
             checked={settings.mode === 'clipboard'}
             onChange={() => setMode('clipboard')}
             className="accent-brand-accent"
-            aria-label="Clipboard Mode"
           />
           <span className="text-brand-text text-sm">Clipboard Mode</span>
           <span className="text-brand-muted text-xs">— copy the prompt to paste into Claude.ai</span>
@@ -37,7 +36,6 @@ export function TutorSettings() {
             checked={settings.mode === 'apikey'}
             onChange={() => setMode('apikey')}
             className="accent-brand-accent"
-            aria-label="API Key Mode"
           />
           <span className="text-brand-text text-sm">API Key Mode</span>
           <span className="text-brand-muted text-xs">— streams responses inline from your Anthropic account</span>
