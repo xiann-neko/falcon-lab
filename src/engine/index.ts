@@ -28,3 +28,6 @@ export {
   domainReadinessScore,
   overallSmeReadiness,
 } from './domain-readiness'
+
+export { scoreScenario } from './scenario'
+export type { ScenarioResult } from './scenario'
