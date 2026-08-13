@@ -12,3 +12,14 @@ export type {
   ContentTrack,
   ContentDomain,
 } from './types'
+
+export {
+  DOMAINS,
+  getDomain,
+  getTrack,
+  getModule,
+  getAllModules,
+  getDomainModules,
+  getTrackScenario,
+  getDomainCumulativeScenario,
+} from './registry'
