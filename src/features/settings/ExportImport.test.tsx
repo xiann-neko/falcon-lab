@@ -1,6 +1,6 @@
+import 'fake-indexeddb/auto'
 import { vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import 'fake-indexeddb/auto'
 import { db } from '../../db'
 import { CompetencyLevel } from '../../engine'
 import { ExportImport } from './ExportImport'
