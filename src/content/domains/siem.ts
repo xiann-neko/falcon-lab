@@ -407,11 +407,11 @@ const siemCumulativeScenario: Scenario = {
 
 // ── Domain 1 export ───────────────────────────────────────────────────────────
 
-export const siemDomain: ContentDomain = {
+export const siemDomain = {
   id: 'siem',
   title: 'LogScale / Next-Gen SIEM',
   emoji: '📡',
   order: 1,
   tracks: [foundationsTrack],
   cumulativeScenario: siemCumulativeScenario,
-}
+} satisfies ContentDomain

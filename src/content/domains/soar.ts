@@ -8,11 +8,11 @@ const soarCumulativeScenario: Scenario = {
   steps: [],
 }
 
-export const soarDomain: ContentDomain = {
+export const soarDomain = {
   id: 'soar',
   title: 'Falcon Fusion SOAR',
   emoji: '⚡',
   order: 2,
   tracks: [],
   cumulativeScenario: soarCumulativeScenario,
-}
+} satisfies ContentDomain

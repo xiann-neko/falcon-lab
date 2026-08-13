@@ -8,11 +8,11 @@ const charlotteCumulativeScenario: Scenario = {
   steps: [],
 }
 
-export const charlotteAiDomain: ContentDomain = {
+export const charlotteAiDomain = {
   id: 'charlotte-ai',
   title: 'Charlotte AI',
   emoji: '🤖',
   order: 4,
   tracks: [],
   cumulativeScenario: charlotteCumulativeScenario,
-}
+} satisfies ContentDomain

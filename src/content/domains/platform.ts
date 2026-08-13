@@ -8,11 +8,11 @@ const platformCumulativeScenario: Scenario = {
   steps: [],
 }
 
-export const platformDomain: ContentDomain = {
+export const platformDomain = {
   id: 'platform',
   title: 'Platform Essentials',
   emoji: '🔧',
   order: 5,
   tracks: [],
   cumulativeScenario: platformCumulativeScenario,
-}
+} satisfies ContentDomain

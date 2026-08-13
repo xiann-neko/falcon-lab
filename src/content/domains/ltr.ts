@@ -8,11 +8,11 @@ const ltrCumulativeScenario: Scenario = {
   steps: [],
 }
 
-export const ltrDomain: ContentDomain = {
+export const ltrDomain = {
   id: 'ltr',
   title: 'LTR & Data Tiers',
   emoji: '🗄️',
   order: 3,
   tracks: [],
   cumulativeScenario: ltrCumulativeScenario,
-}
+} satisfies ContentDomain
