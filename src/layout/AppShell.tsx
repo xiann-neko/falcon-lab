@@ -8,6 +8,7 @@ import SoarPage         from '../pages/SoarPage'
 import LtrPage          from '../pages/LtrPage'
 import CharlotteAiPage  from '../pages/CharlotteAiPage'
 import PlatformPage     from '../pages/PlatformPage'
+import SrReviewPage     from '../pages/SrReviewPage'
 import TutorPage        from '../pages/TutorPage'
 import SettingsPage     from '../pages/SettingsPage'
 
@@ -30,6 +31,7 @@ export default function AppShell() {
           <Route path="/ltr/*"       element={<LtrPage />} />
           <Route path="/charlotte/*" element={<CharlotteAiPage />} />
           <Route path="/platform/*"  element={<PlatformPage />} />
+          <Route path="/review"      element={<SrReviewPage />} />
           <Route path="/tutor"       element={<TutorPage />} />
           <Route path="/settings"    element={<SettingsPage />} />
         </Routes>
