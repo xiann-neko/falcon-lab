@@ -1,4 +1,5 @@
 import type { ContentDomain, Scenario } from '../types'
+import { dataArchitectureTrack } from './ltr-track-3-1'
 
 const ltrCumulativeScenario: Scenario = {
   id: 'ltr-cumulative',
@@ -13,6 +14,6 @@ export const ltrDomain = {
   title: 'LTR & Data Tiers',
   emoji: '🗄️',
   order: 3,
-  tracks: [],
+  tracks: [dataArchitectureTrack],
   cumulativeScenario: ltrCumulativeScenario,
 } satisfies ContentDomain

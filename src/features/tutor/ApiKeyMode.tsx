@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import type { ReactNode } from 'react'
 import { buildPrompt } from './buildPrompt'
 import type { StudentContext } from '../../hooks/useTutorContext'
 
@@ -13,7 +14,7 @@ interface ApiKeyModeProps {
   model: string
 }
 
-export function ApiKeyMode({ context, apiKey, model }: ApiKeyModeProps): JSX.Element {
+export function ApiKeyMode({ context, apiKey, model }: ApiKeyModeProps): ReactNode {
   const [messages, setMessages] = useState<Message[]>([])
   const [question, setQuestion] = useState('')
   const [streaming, setStreaming] = useState(false)
