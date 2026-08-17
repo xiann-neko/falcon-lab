@@ -364,8 +364,8 @@ const apiScenario: Scenario = {
       choices: [
         { text: 'Trigger containment anyway — the API is idempotent and will handle duplicate containment requests gracefully' },
         { text: 'Abort the entire playbook — if containment is pending, the playbook has been triggered in error' },
-        { text: 'Wait 60 seconds and re-check the status — containment_pending means the sensor is processing the command; proceed when status becomes "contained" or log that containment was already in progress if the timeout is reached' },
         { text: 'Escalate to a human analyst — automated scripts cannot handle containment_pending status and require manual intervention' },
+        { text: 'Wait 60 seconds and re-check the status — containment_pending means the sensor is processing the command; proceed when status becomes "contained" or log that containment was already in progress if the timeout is reached' },
       ],
       correctChoiceIndex: 3,
       wrongConsequence: 'Triggering containment on a host in "containment_pending" state sends a duplicate command that the sensor is already processing — potentially causing unexpected state transitions. Aborting the entire playbook loses the rest of the triage workflow. Automated scripts can absolutely handle containment_pending — it is a standard expected state during automated workflows.',
