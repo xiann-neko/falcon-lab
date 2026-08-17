@@ -1,6 +1,7 @@
 import type { ContentDomain, Scenario } from '../types'
 import { foundationsTrack } from './soar-track-2-1'
 import { workflowBuilderTrack } from './soar-track-2-2'
+import { playbookDesignTrack } from './soar-track-2-3'
 
 const soarCumulativeScenario: Scenario = {
   id: 'soar-cumulative',
@@ -15,6 +16,6 @@ export const soarDomain = {
   title: 'Falcon Fusion SOAR',
   emoji: '⚡',
   order: 2,
-  tracks: [foundationsTrack, workflowBuilderTrack],
+  tracks: [foundationsTrack, workflowBuilderTrack, playbookDesignTrack],
   cumulativeScenario: soarCumulativeScenario,
 } satisfies ContentDomain
