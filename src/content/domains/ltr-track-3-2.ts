@@ -59,7 +59,7 @@ const costQuestions: QuizQuestion[] = [
     text: 'Your highest storage cost drivers are: (1) EDR telemetry 200 GB/day × 365 days, (2) DNS logs 400 GB/day × 90 days, (3) Application debug logs 1 TB/day × 30 days. Which is the biggest cost and what should you consider?',
     options: [
       'DNS logs (36 TB total) — 90-day retention is already aggressive; no change needed',
-      'Application debug logs (30 TB total) — consider dropping at ingest entirely if they serve no security detection purpose',
+      'DNS logs (36 TB total) — reduce retention to 30 days to match application log retention',
       'Application debug logs (30 TB total) — consider dropping at ingest entirely if they serve no security detection purpose',
       'EDR telemetry (73 TB total) — consider reducing to 180 days retention; EDR is high-value for investigations',
     ],
@@ -274,7 +274,7 @@ const complianceQuestions: QuizQuestion[] = [
       'Tag EU-origin events in parsers with #region=eu — LogScale routes tagged events to EU LTR automatically',
     ],
     correctIndex: 1,
-    explanation: 'Wait — this is option index 3 (D), but option D says "request from support" which is not the correct answer. Let me re-read...\n\nActually the correct answer is option A (index 0): configure the LTR S3 bucket in an EU region. Data residency in LogScale LTR is controlled by your bucket configuration. LogScale writes segments to the bucket you specify — configure it in eu-central-1 or eu-west-1 and data stays in the EU. There is no built-in "GDPR mode," region-routing tags, or support-managed enforcement for customer-controlled LTR buckets.',
+    explanation: 'Data residency in LogScale LTR is controlled by your bucket configuration. Configure the LTR S3 bucket in an EU region (e.g. eu-central-1 or eu-west-1) and LogScale writes segments there — data never crosses regions unless the bucket is misconfigured. There is no built-in GDPR mode, region-routing tags, or support-managed enforcement for customer-controlled LTR buckets.',
     docTitle: 'LogScale LTR Data Residency',
     docUrl: 'https://falcon.crowdstrike.com/documentation/page/logscale-ltr',
   },
@@ -377,8 +377,8 @@ const optimizationScenario: Scenario = {
       id: 'ltr-opt-s5',
       narrative: 'After implementing changes — dropping IIS non-error logs at ingest, reducing application debug log retention to 30 days, and moving authentication logs older than 6 months to LTR — you want to confirm the cost reduction target was met. What metric do you verify?',
       choices: [
-        { text: 'Total daily ingestion volume in GB/day before and after changes — ingestion drives all tier costs' },
         { text: 'Total stored GB across all tiers before and after changes, broken down by event type — this directly measures whether the 40% cost target was reached' },
+        { text: 'Total daily ingestion volume in GB/day before and after changes — ingestion drives all tier costs' },
         { text: 'LogScale query response time on dashboards — faster dashboards indicate less data in Hot tier' },
         { text: 'Number of detection rules that triggered after the changes — fewer matches means the data reduction was too aggressive' },
       ],
