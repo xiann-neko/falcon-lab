@@ -1,6 +1,7 @@
 import type { ContentDomain, Scenario } from '../types'
 import { fdrTrack } from './platform-track-5-1'
 import { apiTrack } from './platform-track-5-2'
+import { governanceTrack } from './platform-track-5-3'
 
 const platformCumulativeScenario: Scenario = {
   id: 'platform-cumulative',
@@ -15,6 +16,6 @@ export const platformDomain = {
   title: 'Platform Essentials',
   emoji: '🔧',
   order: 5,
-  tracks: [fdrTrack, apiTrack],
+  tracks: [fdrTrack, apiTrack, governanceTrack],
   cumulativeScenario: platformCumulativeScenario,
 } satisfies ContentDomain
