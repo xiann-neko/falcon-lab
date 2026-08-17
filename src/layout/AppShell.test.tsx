@@ -36,9 +36,10 @@ test('SIEM page content is shown at /siem', () => {
   expect(screen.getByRole('heading', { name: /siem/i })).toBeInTheDocument()
 })
 
-test('Tutor page content is shown at /tutor', () => {
+test('Tutor page content is shown at /tutor', async () => {
   renderShell('/tutor')
-  expect(screen.getByRole('heading', { name: /tutor/i })).toBeInTheDocument()
+  // The tutor page renders an h1 with "Tutor" once useTutorContext and useTutorSettings hooks resolve
+  await waitFor(() => expect(screen.getByRole('heading', { name: /tutor/i })).toBeInTheDocument())
 })
 
 test('Settings page content is shown at /settings', () => {

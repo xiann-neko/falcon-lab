@@ -31,9 +31,9 @@ describe('DomainPage', () => {
     expect(screen.getByText(/What is LogScale/i)).toBeInTheDocument()
   })
 
-  it('renders "Content coming soon" for stub domains with no tracks', () => {
+  it('renders module links for LTR Track 3.1 Data Architecture', () => {
     renderAt('/ltr', <DomainPage domainId="ltr" />)
-    expect(screen.getByText(/Content coming soon/i)).toBeInTheDocument()
+    expect(screen.getByText(/Hot \/ Warm \/ Cold Tiers Explained/i)).toBeInTheDocument()
   })
 })
 

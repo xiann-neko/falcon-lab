@@ -6,8 +6,12 @@ import { CompetencyLevel } from '../../engine'
 import { ExportImport } from './ExportImport'
 
 // Mock URL.createObjectURL and URL.revokeObjectURL (not available in jsdom)
-global.URL.createObjectURL = vi.fn(() => 'blob:mock')
-global.URL.revokeObjectURL = vi.fn()
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(globalThis as any).URL = {
+  ...(globalThis as any).URL,
+  createObjectURL: vi.fn(() => 'blob:mock'),
+  revokeObjectURL: vi.fn(),
+}
 
 // Mock anchor click to prevent jsdom errors
 const clickSpy = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
