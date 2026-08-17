@@ -1,5 +1,6 @@
 import type { ContentDomain, Scenario } from '../types'
 import { foundationsTrack } from './charlotte-track-4-1'
+import { usingCharlotteTrack } from './charlotte-track-4-2'
 
 const charlotteCumulativeScenario: Scenario = {
   id: 'charlotte-ai-cumulative',
@@ -14,6 +15,6 @@ export const charlotteAiDomain = {
   title: 'Charlotte AI',
   emoji: '🤖',
   order: 4,
-  tracks: [foundationsTrack],
+  tracks: [foundationsTrack, usingCharlotteTrack],
   cumulativeScenario: charlotteCumulativeScenario,
 } satisfies ContentDomain
