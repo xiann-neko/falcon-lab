@@ -399,14 +399,105 @@ const foundationsTrack: ContentTrack = {
   scenario: foundationsTrackScenario,
 }
 
-// ── SIEM cumulative scenario (stub) ──────────────────────────────────────────
+// ── SIEM cumulative scenario ─────────────────────────────────────────────────
 
 const siemCumulativeScenario: Scenario = {
   id: 'siem-cumulative',
-  title: 'SIEM Domain — Cumulative End-of-Domain Scenario',
-  context: 'Coming in a future content release. This scenario will span multiple tracks, requiring both CQL query writing and detection pattern knowledge.',
+  title: 'SIEM Capstone: End-to-End Incident Response',
+  context: 'This scenario combines all SIEM skills: LogScale data model, CQL querying, detection alerting, and dashboard governance. A Monday morning begins normally. By mid-morning, three independent signals appear. Your mission: use LogScale to determine whether they are related, identify the threat, contain it, and leave a dashboard in place for ongoing monitoring — all within a 90-minute response window.',
   isCumulative: true,
-  steps: [],
+  steps: [
+    {
+      id: 'siem-cum-s1',
+      narrative: 'At 09:12, a "High Failed Login Volume" alert fires: 847 failures from 14 IPs in the past hour. The alert uses a static threshold of 500. Three of the 14 IPs also appear in your threat intel lookup CSV as known Tor exit nodes. Which CQL query efficiently surfaces ONLY the Tor exit node IPs and their failure counts?',
+      choices: [
+        { text: '#event_simpleName = UserLogonFailed2 | groupBy([RemoteIP], function=count()) | lookup(file="tor_exit_nodes.csv", field=RemoteIP, key=ip) | isKnownTor = true | sort(field=_count, order=desc)' },
+        { text: '#event_simpleName = UserLogonFailed2 | RemoteIP in tor_exit_nodes | count()' },
+        { text: '#event_simpleName = UserLogonFailed2 | join({file="tor_exit_nodes.csv"}, field=[RemoteIP]) | count()' },
+        { text: 'ThreatIntel = tor | #event_simpleName = UserLogonFailed2 | groupBy([RemoteIP])' },
+      ],
+      correctChoiceIndex: 0,
+      wrongConsequence: 'Option B uses invalid "in file" syntax — LogScale does not support direct in-file membership. Option C confuses join() syntax — join() takes a subquery, not a file path. Option D invents a "ThreatIntel" field that does not exist in Falcon events.',
+      reasoning: 'The correct pattern is: filter (tag) → aggregate (groupBy) → enrich (lookup) → filter enriched results. lookup() appends columns from the CSV to matching rows. Filtering on isKnownTor = true (a column in the CSV) after the lookup keeps only the Tor IPs. sort() puts the highest-volume attacker first.',
+      docTitle: 'CQL Lookup and Threat Intel Enrichment',
+      docUrl: 'https://library.humio.com/data-analysis/functions-lookup.html',
+    },
+    {
+      id: 'siem-cum-s2',
+      narrative: 'The three Tor IPs combined have 312 failures but also 2 successful logins — one for "svc_api" (a service account) and one for "admin_backup". At 09:34, a second unrelated alert fires: "Scheduled Task Created" on server DB-PROD-03. This could be persistence. How do you determine if these two alerts are related?',
+      choices: [
+        { text: 'Query UserLogon events for svc_api and admin_backup and check if either accessed DB-PROD-03 after the Tor IPs\' successful logins using timestamp correlation' },
+        { text: 'Close the scheduled task alert — it fired 22 minutes after the login alert so they cannot be related' },
+        { text: 'Escalate both alerts independently to different Tier 2 analysts for parallel investigation' },
+        { text: 'Wait for a third alert before drawing any conclusions — two data points is insufficient' },
+      ],
+      correctChoiceIndex: 0,
+      wrongConsequence: 'Time gaps of 22 minutes are entirely consistent with post-compromise lateral movement. Parallel investigation by separate analysts risks missing the connection between them. Waiting for a third alert delays response to what may already be an active intrusion.',
+      reasoning: 'Correlating alerts is a core SOC skill. Query UserLogon for both compromised accounts, filter for the time window after the Tor login successes, and check if either account touched DB-PROD-03. If svc_api or admin_backup appears in a UserLogon event on DB-PROD-03 between 09:12 and 09:34, the alerts are almost certainly the same incident.',
+      docTitle: 'LogScale Alert Correlation',
+      docUrl: 'https://library.humio.com/data-analysis/query-best-practices.html',
+    },
+    {
+      id: 'siem-cum-s3',
+      narrative: 'Your correlation query confirms: svc_api logged into DB-PROD-03 at 09:29, 17 minutes after the successful Tor login. A scheduled task named "WindowsUpdate_Svc" was created at 09:34 by svc_api. This is a confirmed persistence mechanism. A third alert fires at 09:41: "Anomalous Outbound Data Volume" — 2.1GB outbound from DB-PROD-03 in 20 minutes. All three alerts are the same incident. What is the correct IMMEDIATE action?',
+      choices: [
+        { text: 'Isolate DB-PROD-03 via Falcon Real Time Response, disable svc_api, and open a P1 incident — these three correlated indicators confirm active data exfiltration' },
+        { text: 'Continue investigating for another 30 minutes to determine what data was exfiltrated before taking action' },
+        { text: 'Only disable svc_api — isolating DB-PROD-03 would disrupt database production operations' },
+        { text: 'Alert the database administrator and wait for their approval before any containment' },
+      ],
+      correctChoiceIndex: 0,
+      wrongConsequence: 'Waiting 30 more minutes during active exfiltration of 2.1GB/20min could allow gigabytes more data to leave. Disabling only the account does not revoke the active session or stop the scheduled task already in place. Waiting for DBA approval delays a time-critical containment decision — the SOC has authority to contain during active exfiltration.',
+      reasoning: 'Three correlated indicators — external compromise, lateral movement, persistence, and active exfiltration — constitute a confirmed P1. The database disruption from isolation is an acceptable trade-off against ongoing data loss. Contain first, coordinate recovery second. Open the P1 incident immediately to trigger the full IR process.',
+      docTitle: 'CrowdStrike Incident Response — Containment',
+      docUrl: 'https://falcon.crowdstrike.com/documentation/page/incident-response',
+    },
+    {
+      id: 'siem-cum-s4',
+      narrative: 'DB-PROD-03 is isolated and svc_api is disabled. You need to determine the full scope: did the attacker access any other hosts using svc_api after the initial Tor login? Write the correct CQL query.',
+      choices: [
+        { text: '#event_simpleName = UserLogon | UserName = svc_api | timestamp > "2026-08-17T09:12:00Z" | groupBy([ComputerName]) | sort(field=_count, order=desc)' },
+        { text: 'UserName = svc_api | EventType = logon | groupBy([ComputerName])' },
+        { text: '#event_simpleName = UserLogon | groupBy([ComputerName]) | UserName = svc_api' },
+        { text: 'svc_api | #event_simpleName = UserLogon | distinct(ComputerName)' },
+      ],
+      correctChoiceIndex: 0,
+      wrongConsequence: 'Option B uses wrong field names. Option C places the UserName filter after the groupBy — at that point UserName is no longer a per-event field, it has been aggregated away. Option D puts a bare keyword "svc_api" before an indexed tag filter — bare keyword searches are slower and less precise.',
+      reasoning: 'The correct pipeline: indexed tag filter → field filter → time filter → groupBy. Placing the timestamp filter explicitly ensures you only see activity after the attacker\'s initial compromise time. groupBy([ComputerName]) shows every host svc_api touched. sort() reveals the most-accessed hosts — likely the ones to investigate next.',
+      docTitle: 'CQL Query Construction',
+      docUrl: 'https://library.humio.com/data-analysis/syntax.html',
+    },
+    {
+      id: 'siem-cum-s5',
+      narrative: 'Scope confirmed: svc_api touched 4 hosts. All 4 are now isolated. The immediate incident is contained. You need to create a monitoring dashboard for the next 72 hours to detect if the attacker attempts to return using a different account or technique. Which panels should the dashboard include?',
+      choices: [
+        { text: 'Failed login volume by source IP (time chart), Successful logins from known Tor IPs (single value/alert), New scheduled tasks created (table, live), and Outbound data volume by host (time chart)' },
+        { text: 'A single panel showing all events from the past 7 days sorted by timestamp' },
+        { text: 'Only the three alerts that fired during the incident — no new panels needed' },
+        { text: 'A dashboard showing all 22 existing alerts in a list view' },
+      ],
+      correctChoiceIndex: 0,
+      wrongConsequence: 'A single chronological event list is too noisy to monitor effectively. Re-using only the original three alerts provides coverage for the same techniques but not variations (new account, different persistence method). Listing all 22 alerts is an audit view, not a monitoring dashboard.',
+      reasoning: 'A targeted monitoring dashboard should cover: (1) the known attack vector (Tor IP logins), (2) the lateral movement technique (auth to multiple hosts), (3) the persistence technique (scheduled task creation), and (4) the impact indicator (outbound data volume). These four panels give responders immediate visibility into a return attempt or missed lateral movement.',
+      docTitle: 'LogScale Dashboard Design for Incident Monitoring',
+      docUrl: 'https://library.humio.com/dashboards/dashboards-widgets.html',
+    },
+    {
+      id: 'siem-cum-s6',
+      narrative: 'After the incident, you run a post-incident review. One finding: the three alerts fired independently with no automatic correlation — analysts had to connect them manually, which took 29 minutes. What process improvement addresses this gap?',
+      choices: [
+        { text: 'Create a correlation query saved search that joins UserLogon (from known bad IPs), ScheduledTaskCreated, and high outbound volume — run it as a single alert with a shorter schedule interval' },
+        { text: 'Hire more analysts so alerts can be reviewed faster' },
+        { text: 'Raise the thresholds on all three alerts so they only fire for extreme values' },
+        { text: 'Purchase a separate SOAR tool to handle alert correlation — LogScale cannot correlate' },
+      ],
+      correctChoiceIndex: 0,
+      wrongConsequence: 'More analysts does not solve the root problem — correlation logic. Raising thresholds makes each individual alert less sensitive and would have delayed detection further. LogScale CQL can perform multi-event correlation using join() and time-window patterns — a dedicated SOAR tool is not required for correlation queries.',
+      reasoning: 'The fix is a compound detection alert that correlates the three signals in one query using join() and time-window logic: "find hosts where a suspicious external login was followed by a new scheduled task within 60 minutes AND outbound data volume exceeds baseline." This reduces the 29-minute manual correlation window to near-zero.',
+      docTitle: 'LogScale Multi-Event Correlation',
+      docUrl: 'https://library.humio.com/data-analysis/functions-join.html',
+    },
+  ],
 }
 
 // ── Domain 1 export ───────────────────────────────────────────────────────────
