@@ -30,6 +30,11 @@ describe('DomainPage', () => {
     renderAt('/siem', <DomainPage domainId="siem" />)
     expect(screen.getByText(/What is LogScale/i)).toBeInTheDocument()
   })
+
+  it('renders "Content coming soon" for stub domains with no tracks', () => {
+    renderAt('/ltr', <DomainPage domainId="ltr" />)
+    expect(screen.getByText(/Content coming soon/i)).toBeInTheDocument()
+  })
 })
 
 describe('ModulePage', () => {

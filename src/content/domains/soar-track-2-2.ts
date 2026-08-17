@@ -21,7 +21,7 @@ const actionsLibraryConcepts: ConceptSection[] = [
   },
   {
     title: 'Enrichment and Response Actions',
-    body: '**Enrichment actions** add context to a detection or incident by querying external sources:\n- **Threat Intelligence lookup:** query CrowdStrike Threat Intelligence for indicator reputation (IP, domain, hash)\n- **Identity enrichment:** look up the affected user in Active Directory or Falcon Identity Protection\n- **Sandbox analysis:** submit a suspicious file hash to the Falcon sandbox for detonation analysis\n- **WHOIS/GeoIP:** resolve an external IP to its owner and geographic location\n\n**Response actions** take direct action on the environment:\n- **Contain Host (Network Containment):** isolates the device from the network while keeping the Falcon sensor connected — the most common automated response action\n- **Run RTR Command:** executes a Real Time Response command on a host (get file, run script, kill process)\n- **Block Indicator:** adds an IP, domain, or hash to a Custom IOA or Network Containment block list\n- **Update Incident:** changes an incident\'s status, severity, or assigned analyst in Falcon',
+    body: '**Enrichment actions** add context to a detection or incident by querying external sources:\n- **Threat Intelligence lookup:** query CrowdStrike Threat Intelligence for indicator reputation (IP, domain, hash)\n- **Identity enrichment:** look up the affected user in Active Directory or Falcon Identity Protection\n- **Sandbox analysis:** submit a suspicious file hash to the Falcon sandbox for detonation analysis\n- **WHOIS/GeoIP:** resolve an external IP to its owner and geographic location\n\n**Response actions** take direct action on the environment:\n- **Contain Host (Network Containment):** isolates the device from the network while keeping the Falcon sensor connected — the most common automated response action\n- **Run RTR Command:** executes a Real Time Response command on a host (get file, run script, kill process)\n- **Block Indicator:** adds an IP, domain, or hash to a Custom IOC or Network Containment block list\n- **Update Incident:** changes an incident\'s status, severity, or assigned analyst in Falcon',
   },
 ]
 
@@ -92,7 +92,7 @@ const actionsLibraryQuestions: QuizQuestion[] = [
       'Send Email — notify the firewall team to add a manual block rule',
     ],
     correctIndex: 0,
-    explanation: 'The Block Indicator action adds an IP, domain, or hash to a Falcon Custom IOA or indicator block list. This policy is pushed to all Falcon-protected endpoints within minutes, preventing any host from communicating with the blocked indicator. Host containment only isolates one host. RTR hosts-file updates are host-specific and don\'t scale. Email to firewall team introduces manual delay.',
+    explanation: 'The Block Indicator action adds an IP, domain, or hash to a Falcon Custom IOC or indicator block list. This policy is pushed to all Falcon-protected endpoints within minutes, preventing any host from communicating with the blocked indicator. Host containment only isolates one host. RTR hosts-file updates are host-specific and don\'t scale. Email to firewall team introduces manual delay.',
     docTitle: 'Falcon Fusion Block Indicator Action',
     docUrl: 'https://falcon.crowdstrike.com/documentation/page/falcon-fusion-actions',
   },
