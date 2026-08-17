@@ -43,8 +43,8 @@ const ltrCumulativeScenario: Scenario = {
       narrative: 'Setting the data residency issue aside for remediation, you write the audit query: retrieve all authentication events for user "j.rodriguez@corp.example" from exactly 7 years ago (August 2019). What must the query include?',
       choices: [
         { text: 'A wildcard search: `j.rodriguez* | start=2019-08-01T00:00:00Z end=2019-08-31T23:59:59Z`' },
-        { text: 'Type and time filters first: `#type=authentication | start=2019-08-01T00:00:00Z end=2019-08-31T23:59:59Z | user="j.rodriguez@corp.example"`' },
         { text: 'A user filter only: `user="j.rodriguez@corp.example"` with no time bound — LogScale will search LTR automatically' },
+        { text: 'Type and time filters first: `#type=authentication | start=2019-08-01T00:00:00Z end=2019-08-31T23:59:59Z | user="j.rodriguez@corp.example"`' },
         { text: 'groupBy first: `groupBy([user]) | user="j.rodriguez@corp.example" | start=2019-08-01T00:00:00Z end=2019-08-31T23:59:59Z`' },
       ],
       correctChoiceIndex: 2,
@@ -58,9 +58,9 @@ const ltrCumulativeScenario: Scenario = {
       narrative: 'You run the optimised query. It returns the correct results in 2 hours 47 minutes — within the 4-hour SLA, but the auditor asks: "Can you guarantee sub-2-hour retrieval in all future audits?" How do you address this?',
       choices: [
         { text: 'Yes — once the query is optimised, LogScale caches the result and future runs of the same query are instant' },
-        { text: 'No — LTR query time scales with matched segment count, which grows as more data is added; to guarantee sub-2-hour retrieval, pre-compute and cache compliance query results as scheduled saved searches rather than relying on on-demand LTR queries' },
         { text: 'Yes — LTR performance is stable and deterministic; the same query always takes the same time regardless of data volume changes' },
         { text: 'No — LTR has a hard cap of 4 hours per query and cannot be optimised further' },
+        { text: 'No — LTR query time scales with matched segment count, which grows as more data is added; to guarantee sub-2-hour retrieval, pre-compute and cache compliance query results as scheduled saved searches rather than relying on on-demand LTR queries' },
       ],
       correctChoiceIndex: 3,
       wrongConsequence: 'LogScale does not cache LTR query results between separate query runs. LTR performance is not deterministic — it degrades as total data volume grows and as segment count for the target time range increases. There is no hard 4-hour cap — a poorly written LTR query can run indefinitely.',
