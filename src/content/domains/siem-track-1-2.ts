@@ -5,7 +5,6 @@ import type {
   ConceptSection,
   CqlChallenge,
   Scenario,
-  ScenarioStep,
 } from '../types'
 
 // ═══════════════════════════════════════════════════════════════════════════════
