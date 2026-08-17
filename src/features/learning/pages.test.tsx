@@ -21,14 +21,19 @@ describe('DomainPage', () => {
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(/LogScale/i)
   })
 
-  it('renders "Content coming soon" for a stub domain', () => {
+  it('renders module links for SOAR Track 2.1 Foundations', () => {
     renderAt('/soar', <DomainPage domainId="soar" />)
-    expect(screen.getByText(/content coming soon/i)).toBeInTheDocument()
+    expect(screen.getByText(/What is Falcon Fusion/i)).toBeInTheDocument()
   })
 
   it('renders module links for SIEM Track 1.1', () => {
     renderAt('/siem', <DomainPage domainId="siem" />)
     expect(screen.getByText(/What is LogScale/i)).toBeInTheDocument()
+  })
+
+  it('renders "Content coming soon" for stub domains with no tracks', () => {
+    renderAt('/ltr', <DomainPage domainId="ltr" />)
+    expect(screen.getByText(/Content coming soon/i)).toBeInTheDocument()
   })
 })
 
