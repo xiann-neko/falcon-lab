@@ -15,12 +15,10 @@ import type {
 const integrationsConcepts: ConceptSection[] = [
   {
     title: 'ITSM Integration: ServiceNow and Jira',
-    codeLanguage: 'typescript',
     body: 'Integrating Falcon Fusion with IT Service Management tools closes the loop between security alerts and operational response workflows.\n\n**ServiceNow:** Fusion\'s Create Incident action creates a ServiceNow incident with pre-configured field mappings — caller, short description, priority, category, and assignment group. Use template variables to pre-fill the description with detection name, TI verdict, affected host, and investigation links. The created incident ID is available as an action output for downstream notifications.\n\n**Jira:** Similar Create Issue action — configure project key, issue type (Bug/Task/Story), priority, labels, and description. Jira integration is common for security teams that track remediation work alongside development in the same Jira project.\n\nBest practices:\n- Map Falcon severity to ITSM priority consistently (Critical→P1, High→P2, Medium→P3)\n- Pre-fill description with all enrichment context so analysts have everything in the ticket without accessing Falcon\n- Always store the ticket ID in a workflow variable for use in notifications',
   },
   {
     title: 'Email and Messaging Platform Integration',
-    codeLanguage: 'typescript',
     body: '**Email via SMTP:** Fusion\'s Send Email action supports dynamic recipients, subject, and HTML body. Use for formal stakeholder notifications, compliance reporting, and non-SOC communication (e.g., notifying a department head that their employee\'s device was contained).\n\n**Slack via Webhook:** Configure a Slack webhook in your workspace, paste the URL into the Fusion Slack action, and compose the message with template variables. Supports Markdown formatting — bold for critical fields, code blocks for IOCs, links for Falcon URLs.\n\n**Microsoft Teams:** Similar webhook-based integration. Teams uses Adaptive Card JSON for rich message formatting — more complex to configure but produces better-structured messages than plain text.\n\nChoosing the right channel:\n- P1 Critical: PagerDuty (guaranteed delivery, on-call paging) + Slack #soc-critical (team awareness)\n- P2 High: Slack #soc-alerts + email to ticket assignee\n- P3 Medium: ticket only (no real-time notification)\n- Daily summaries: scheduled email to management',
   },
 ]
@@ -114,12 +112,10 @@ export const integrationsModule: ContentModule = {
 const governanceConcepts: ConceptSection[] = [
   {
     title: 'Testing Playbooks Before Production',
-    codeLanguage: 'typescript',
     body: 'Fusion provides a testing approach to validate workflows without executing destructive actions:\n\n**Test mode / simulation:** Some Falcon environments support running a workflow against a real or synthetic event in a sandbox mode where response actions (Contain Host, Delete File, Disable Account) are logged but not executed. Notification actions (email, Slack, ticket) may still fire — configure test notification targets (a dedicated #fusion-testing Slack channel) to avoid alerting real stakeholders.\n\n**Step-by-step validation:**\n1. Enable the workflow in a non-production Falcon environment with a lab device as the test target\n2. Trigger a detection manually on the lab device\n3. Review the execution log: verify each action input/output, check template variable resolution, confirm branch conditions evaluated correctly\n4. Confirm no unintended actions fired\n5. Repeat with edge cases: missing TI verdict, asset not in lookup table, duplicate trigger\n\nNever enable a new production playbook without at least one full test-path execution.',
   },
   {
     title: 'Versioning and Governance',
-    codeLanguage: 'typescript',
     body: '**Versioning:** Fusion does not have native version control (no git-style history). Best practice:\n- Before editing a production playbook, duplicate it (Save As copy)\n- Name the copy with a version suffix: "Auto-Contain Critical v1" → backup, edit original to create v2\n- Keep the previous version disabled (not deleted) as a rollback option for 30 days\n- Document changes in the playbook description with date and author\n\n**Governance framework — every playbook must have:**\n- **Owner:** named analyst responsible for the playbook (not a team — one person)\n- **Purpose and scope:** one-paragraph description of what it does and what it does NOT do\n- **Review date:** the next scheduled review (quarterly for production playbooks)\n- **Escalation path:** what happens if the playbook fails\n- **Change log:** brief notes on what changed in each version\n\n**Quarterly review checklist:**\n- Does the playbook still fire on the right events? (Check trigger filter validity)\n- Are action outputs still formatted correctly? (Check template variables against current payload schemas)\n- Are the integrations still valid? (Check webhook URLs, ServiceNow connectivity, TI query quotas)\n- Have thresholds or conditions become misaligned with the current threat landscape?',
   },
 ]
@@ -169,7 +165,7 @@ const governanceQuestions: QuizQuestion[] = [
   },
   {
     id: 'soar-int-q9',
-    text: 'A production playbook has no named owner — it was built by an analyst who left of the organisation. What is the risk of leaving it running without an owner?',
+    text: 'A production playbook has no named owner — it was built by an analyst who left the organisation. What is the risk of leaving it running without an owner?',
     options: [
       'Nobody validates or tunes it — false positives accumulate, thresholds drift, and integrations break without anyone noticing or fixing them',
       'The playbook will automatically disable itself after 90 days without an active owner',
