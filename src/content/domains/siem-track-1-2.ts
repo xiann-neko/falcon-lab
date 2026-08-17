@@ -5,6 +5,7 @@ import type {
   ConceptSection,
   CqlChallenge,
   Scenario,
+  ScenarioStep,
 } from '../types'
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -403,14 +404,90 @@ export const productionQueriesModule: ContentModule = {
   challenge: cqlChallenge,
 }
 
-// ── Track 1.2 Scenario (stub — filled in by Task 2) ──────────────────────────
+// ── Track 1.2 Scenario ────────────────────────────────────────────────────────
 
-const cqlScenarioStub: Scenario = {
+const cqlScenario: Scenario = {
   id: 'siem-cql-scenario',
   title: 'CQL Threat Hunt: Lateral Movement Investigation',
-  context: 'Scenario steps coming in Task 2.',
-  steps: [],
+  context: 'A threat intelligence tip has come in: a known credential-stuffing campaign is targeting CrowdStrike-protected environments in your sector. Your SOC manager has assigned you 45 minutes to determine whether your organisation is affected. Your primary tool is LogScale. You have full query access to all repositories.',
   isCumulative: false,
+  steps: [
+    {
+      id: 'siem-cql-s1',
+      narrative: 'You start by assessing the scope. You need to find all failed authentications in the past 24 hours and count them. Which query gives you the correct total count efficiently?',
+      choices: [
+        { text: '#event_simpleName = UserLogonFailed2 | count()' },
+        { text: 'AuthResult = Failed | count()' },
+        { text: 'status = failed | EventType = authentication | count()' },
+        { text: 'UserLogonFailed2 | count()' },
+      ],
+      correctChoiceIndex: 0,
+      wrongConsequence: 'Your query either uses wrong field names that return 0 results, or misses the indexed tag filter — making the search much slower than it needs to be on a 24-hour dataset.',
+      reasoning: 'Starting with the indexed tag #event_simpleName = UserLogonFailed2 is correct. The # prefix tells LogScale this is an index field — it can skip billions of non-matching events instantly. count() then returns the total. "AuthResult = Failed" uses a non-standard field name and won\'t match CrowdStrike events.',
+      docTitle: 'CrowdStrike Falcon Event Schema',
+      docUrl: 'https://falcon.crowdstrike.com/documentation/page/re77ca49/crowdstrike-schema-documentation',
+    },
+    {
+      id: 'siem-cql-s2',
+      narrative: 'Your query returns 1,247 failed logins from 38 unique source IPs over 24 hours. Now you need to identify which IPs have more than 20 failures — a threshold consistent with automated brute-forcing. Which query is correct?',
+      choices: [
+        { text: '#event_simpleName = UserLogonFailed2 | groupBy([RemoteIP], function=count()) | _count > 20' },
+        { text: '#event_simpleName = UserLogonFailed2 | count() > 20 | groupBy([RemoteIP])' },
+        { text: '#event_simpleName = UserLogonFailed2 | where(count() > 20) | groupBy([RemoteIP])' },
+        { text: '#event_simpleName = UserLogonFailed2 | RemoteIP.count > 20' },
+      ],
+      correctChoiceIndex: 0,
+      wrongConsequence: 'The incorrect queries either filter before aggregation (so the per-IP counts are never computed), use where() on an aggregation result (invalid — where() applies per-event, not per-group), or use invalid syntax.',
+      reasoning: 'The correct order is: filter (tag) → aggregate (groupBy with count) → post-aggregate filter (_count > 20). The _count field is created by count() inside groupBy. You cannot filter on _count before it is computed.',
+      docTitle: 'CQL Aggregation — groupBy()',
+      docUrl: 'https://library.humio.com/data-analysis/functions-groupby.html',
+    },
+    {
+      id: 'siem-cql-s3',
+      narrative: 'Three IPs exceed 20 failures. For one of them (198.51.100.47) you notice there are also SUCCESSFUL logins after the failures — possible compromise. You need to find which usernames logged in successfully from that IP after failing. Which approach is correct?',
+      choices: [
+        { text: 'Run two separate queries: one for UserLogonFailed2 from that IP, one for UserLogon from that IP, then compare the UserName lists manually or with join()' },
+        { text: '#event_simpleName = UserLogonFailed2 AND UserLogon | RemoteIP = 198.51.100.47 | groupBy([UserName])' },
+        { text: '#event_simpleName = UserLogon | RemoteIP = 198.51.100.47 | status = successful' },
+        { text: 'RemoteIP = 198.51.100.47 | EventType in [UserLogon, UserLogonFailed2] | pivot([EventType])' },
+      ],
+      correctChoiceIndex: 0,
+      wrongConsequence: 'Using AND between two event names is invalid CQL syntax. Querying only successful logins from the IP does not prove they were preceded by failures — it misses the correlation. The pivot syntax does not exist in LogScale.',
+      reasoning: 'To correlate failed then successful logins, you need to find usernames that appear in both event types for that IP. The correct approach is to query each event type separately and then join on UserName, or to review both lists side-by-side. join() in CQL can automate this correlation.',
+      docTitle: 'CQL Functions — join()',
+      docUrl: 'https://library.humio.com/data-analysis/functions-join.html',
+    },
+    {
+      id: 'siem-cql-s4',
+      narrative: 'You confirm that the account "svc_backup" logged in successfully from 198.51.100.47 after 34 failed attempts. To detect lateral movement, you now query how many distinct hosts this account authenticated to in the last 2 hours. Which query is correct?',
+      choices: [
+        { text: '#event_simpleName = UserLogon | UserName = svc_backup | groupBy([ComputerName]) | count()' },
+        { text: '#event_simpleName = UserLogon | UserName = svc_backup | count()' },
+        { text: '#event_simpleName = UserLogon | UserName = svc_backup | distinct(ComputerName)' },
+        { text: '#event_simpleName = UserLogon | UserName = svc_backup | select([ComputerName]) | unique()' },
+      ],
+      correctChoiceIndex: 0,
+      wrongConsequence: 'count() alone tells you how many login events occurred — not how many unique hosts. distinct() and unique() are not standard LogScale aggregate functions. groupBy([ComputerName]) is the correct way to get one row per destination host.',
+      reasoning: 'groupBy([ComputerName]) groups all logins by destination host, giving one result row per unique host with the event count in _count. This tells you both WHICH hosts were accessed and HOW MANY times. If _count rows > 4 in 2 hours for a service account, that is a strong lateral movement indicator.',
+      docTitle: 'CQL Aggregation',
+      docUrl: 'https://library.humio.com/data-analysis/functions-groupby.html',
+    },
+    {
+      id: 'siem-cql-s5',
+      narrative: 'Your query shows svc_backup authenticated to 9 hosts in 90 minutes — far beyond its normal pattern (1 backup server). This is confirmed lateral movement. What is the correct immediate action before continuing your LogScale investigation?',
+      choices: [
+        { text: 'Contain the compromised account (disable or isolate via Falcon Real Time Response) while keeping your LogScale session open to document the full scope' },
+        { text: 'Continue querying for another 30 minutes to build a complete forensic picture before taking any action' },
+        { text: 'Change the svc_backup password immediately and mark the incident resolved' },
+        { text: 'Notify the backup system vendor and wait for their guidance before acting' },
+      ],
+      correctChoiceIndex: 0,
+      wrongConsequence: 'Waiting 30 more minutes gives the threat actor time to establish persistence on all 9 hosts. Changing the password alone does not revoke active sessions or address hosts that may already be compromised. Waiting for vendor guidance is inappropriate for an active incident.',
+      reasoning: 'The SOC principle is: contain first, investigate in parallel. Disabling the account or using Falcon Real Time Response to isolate the most critical compromised host stops the lateral movement immediately. Your LogScale session remains open — you continue documenting scope while the threat is contained. Documentation without containment is malpractice during an active incident.',
+      docTitle: 'CrowdStrike Incident Response Best Practices',
+      docUrl: 'https://falcon.crowdstrike.com/documentation/page/incident-response',
+    },
+  ],
 }
 
 // ── Track 1.2 Export ──────────────────────────────────────────────────────────
@@ -421,5 +498,5 @@ export const cqlTrack: ContentTrack = {
   domainId: 'siem',
   order: 2,
   modules: [basicSearchModule, aggregationModule, advancedFunctionsModule, productionQueriesModule],
-  scenario: cqlScenarioStub,
+  scenario: cqlScenario,
 }

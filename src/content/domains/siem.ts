@@ -414,6 +414,6 @@ export const siemDomain = {
   title: 'LogScale / Next-Gen SIEM',
   emoji: '📡',
   order: 1,
-  tracks: [foundationsTrack],
+  tracks: [foundationsTrack, cqlTrack],
   cumulativeScenario: siemCumulativeScenario,
 } satisfies ContentDomain
