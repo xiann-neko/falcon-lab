@@ -282,8 +282,8 @@ const threatHuntingQuestions: QuizQuestion[] = [
     options: [
       'Accept Charlotte AI\'s hypothesis — "may indicate" is its highest confidence phrase and is reliable for escalation',
       'Refute it immediately — Charlotte AI cannot detect DNS tunnelling because DNS events are not ingested into LogScale by default',
-      'Ask Charlotte AI to provide more detail — a second AI query will confirm or refute the hypothesis without requiring manual analysis',
       'Manually investigate the flagged DNS events: review query frequency, entropy of queried subdomain names, query length distribution, and whether the queried domains resolve to known-good IPs — these characteristics distinguish DNS tunnelling from legitimate high-frequency DNS traffic',
+      'Ask Charlotte AI to provide more detail — a second AI query will confirm or refute the hypothesis without requiring manual analysis',
     ],
     correctIndex: 2,
     explanation: '"May indicate" means Charlotte AI identified a pattern consistent with DNS tunnelling but is not conclusive. Manual confirmation requires reviewing the specific characteristics of DNS tunnelling: unusually long subdomain names (used as data exfiltration channels), high query frequency to a single parent domain, high entropy in subdomain strings, and TXT/NULL record queries. Charlotte AI can surface the candidate events, but the analyst must verify the DNS characteristics that confirm tunnelling versus legitimate traffic like CDN-heavy applications.',
