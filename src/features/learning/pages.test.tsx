@@ -21,9 +21,9 @@ describe('DomainPage', () => {
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent(/LogScale/i)
   })
 
-  it('renders "Content coming soon" for a stub domain', () => {
+  it('renders module links for SOAR Track 2.1 Foundations', () => {
     renderAt('/soar', <DomainPage domainId="soar" />)
-    expect(screen.getByText(/content coming soon/i)).toBeInTheDocument()
+    expect(screen.getByText(/What is Falcon Fusion/i)).toBeInTheDocument()
   })
 
   it('renders module links for SIEM Track 1.1', () => {

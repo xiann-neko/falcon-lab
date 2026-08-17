@@ -1,4 +1,5 @@
 import type { ContentDomain, Scenario } from '../types'
+import { foundationsTrack } from './soar-track-2-1'
 
 const soarCumulativeScenario: Scenario = {
   id: 'soar-cumulative',
@@ -13,6 +14,6 @@ export const soarDomain = {
   title: 'Falcon Fusion SOAR',
   emoji: '⚡',
   order: 2,
-  tracks: [],
+  tracks: [foundationsTrack],
   cumulativeScenario: soarCumulativeScenario,
 } satisfies ContentDomain
