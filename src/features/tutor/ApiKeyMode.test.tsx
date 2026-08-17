@@ -19,8 +19,8 @@ const CONTEXT: StudentContext = {
 function makeStreamMock(text: string) {
   const encoder = new TextEncoder()
   const chunks = [
-    encoder.encode(`data: {"type":"content_block_delta","delta":{"type":"text_delta","text":"${text}"}}\n\n`),
-    encoder.encode('data: {"type":"message_stop"}\n\n'),
+    encoder.encode(`event: content_block_delta\ndata: {"type":"content_block_delta","delta":{"type":"text_delta","text":"${text}"}}\n\n`),
+    encoder.encode('event: message_stop\ndata: {"type":"message_stop"}\n\n'),
   ]
   let idx = 0
   const reader = {

@@ -81,16 +81,13 @@ export function ApiKeyMode({ context, apiKey, model }: ApiKeyModeProps): JSX.Ele
         const lines = buffer.split('\n\n')
         buffer = lines.pop() ?? ''
 
-        for (const line of lines) {
-          const trimmed = line.trim()
-          if (!trimmed.startsWith('data: ')) continue
-          const data = trimmed.slice(6)
+        for (const block of lines) {
+          const dataLine = block.split('\n').find(l => l.startsWith('data: '))
+          if (!dataLine) continue
+          const data = dataLine.slice(6)
           try {
             const parsed = JSON.parse(data)
-            if (
-              parsed.type === 'content_block_delta' &&
-              parsed.delta?.type === 'text_delta'
-            ) {
+            if (parsed.type === 'content_block_delta' && parsed.delta?.type === 'text_delta') {
               accumulated += parsed.delta.text
               setStreamedContent(accumulated)
             }
