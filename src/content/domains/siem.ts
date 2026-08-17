@@ -10,6 +10,7 @@ import type {
 
 import { cqlTrack } from './siem-track-1-2'
 import { detectionTrack } from './siem-track-1-3'
+import { dashboardsTrack } from './siem-track-1-4'
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Track 1.1 — LogScale Foundations
@@ -415,6 +416,6 @@ export const siemDomain = {
   title: 'LogScale / Next-Gen SIEM',
   emoji: '📡',
   order: 1,
-  tracks: [foundationsTrack, cqlTrack, detectionTrack],
+  tracks: [foundationsTrack, cqlTrack, detectionTrack, dashboardsTrack],
   cumulativeScenario: siemCumulativeScenario,
 } satisfies ContentDomain
