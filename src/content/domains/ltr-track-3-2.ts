@@ -56,7 +56,7 @@ const costQuestions: QuizQuestion[] = [
   },
   {
     id: 'ltr-opt-q3',
-    text: 'Your highest storage cost drivers are: (1) EDR telemetry 200 GB/day × 365 days, (2) DNS logs 400 GB/day × 90 days, (3) Application debug logs 1 TB/day × 30 days. Which is the biggest cost and what should you consider?',
+    text: 'Your storage analysis shows: (1) EDR telemetry 200 GB/day × 365 days = 73 TB, (2) DNS logs 400 GB/day × 90 days = 36 TB, (3) Application debug logs 1 TB/day × 30 days = 30 TB. Which event type is the best candidate for cost reduction, and why?',
     options: [
       'DNS logs (36 TB total) — 90-day retention is already aggressive; no change needed',
       'DNS logs (36 TB total) — reduce retention to 30 days to match application log retention',
@@ -64,7 +64,7 @@ const costQuestions: QuizQuestion[] = [
       'EDR telemetry (73 TB total) — consider reducing to 180 days retention; EDR is high-value for investigations',
     ],
     correctIndex: 2,
-    explanation: 'Application debug logs at 1 TB/day × 30 days = 30 TB total. While EDR is the biggest single storage consumer (73 TB), it is high-value security data that justifies its cost. Debug logs are typically low-security-value and are the best candidate for ingest-time elimination. Dropping 1 TB/day saves approximately $X/month depending on tier pricing — the largest proportional reduction for the least security risk.',
+    explanation: 'Application debug logs at 1 TB/day × 30 days = 30 TB total. While EDR is the biggest single storage consumer (73 TB), it is high-value security data that justifies its cost. Debug logs are typically low-security-value and are the best candidate for ingest-time elimination. Dropping 1 TB/day saves a significant amount depending on tier pricing — the largest proportional reduction for the least security risk.',
     docTitle: 'LogScale Storage Cost Analysis',
     docUrl: 'https://falcon.crowdstrike.com/documentation/page/logscale-cost-optimisation',
   },
