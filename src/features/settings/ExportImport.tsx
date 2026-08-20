@@ -83,6 +83,51 @@ export function ExportImport() {
 
       const now = new Date().toISOString()
 
+      // ── Re-derive quiz scores from quiz history ──────────────────────────────
+      // Group answers by moduleId and compute % correct so readiness bars are
+      // populated even though the export only stores the competency level string.
+      const quizScoreMap: Record<string, number> = {}
+      if (data.quizHistory?.length) {
+        const byModule: Record<string, { correct: number; total: number }> = {}
+        for (const entry of data.quizHistory) {
+          if (!byModule[entry.moduleId]) byModule[entry.moduleId] = { correct: 0, total: 0 }
+          byModule[entry.moduleId].total++
+          if (entry.isCorrect) byModule[entry.moduleId].correct++
+        }
+        for (const [moduleId, { correct, total }] of Object.entries(byModule)) {
+          quizScoreMap[moduleId] = Math.round((correct / total) * 100)
+        }
+      }
+
+      // ── Re-derive scenario scores from scenario history ───────────────────────
+      // Map each track's scenario ID → the module IDs it belongs to, then
+      // distribute the latest finalScore to every module in that track.
+      const scenarioScoreMap: Record<string, number> = {}
+      if (data.scenarioHistory?.length) {
+        // Build scenarioId → [moduleIds] from the content registry
+        const scenarioToModules: Record<string, string[]> = {}
+        for (const domain of DOMAINS) {
+          for (const track of domain.tracks) {
+            if (track.scenario) {
+              scenarioToModules[track.scenario.id] = track.modules.map(m => m.id)
+            }
+          }
+        }
+        // Keep only the most recent attempt per scenarioId
+        const latestByScenario: Record<string, number> = {}
+        for (const entry of data.scenarioHistory) {
+          const prev = latestByScenario[entry.scenarioId]
+          if (prev === undefined || entry.completedAt > (data.scenarioHistory.find(h => h.scenarioId === entry.scenarioId && h.finalScore === prev)?.completedAt ?? '')) {
+            latestByScenario[entry.scenarioId] = entry.finalScore
+          }
+        }
+        for (const [scenarioId, score] of Object.entries(latestByScenario)) {
+          for (const moduleId of (scenarioToModules[scenarioId] ?? [])) {
+            scenarioScoreMap[moduleId] = score
+          }
+        }
+      }
+
       // Clear existing data (leave appState intact)
       await Promise.all([
         db.competency.clear(),
@@ -91,13 +136,13 @@ export function ExportImport() {
         db.spacedRepetition.clear(),
       ])
 
-      // Restore competency (minimal records — scores set to null)
+      // Restore competency with re-derived scores so dashboard readiness is accurate
       const competencyEntries = Object.entries(data.competency).map(([moduleId, levelStr]) => ({
         moduleId,
         level:          levelStr as CompetencyLevel,
-        quizScore:      null,
-        challengeScore: null,
-        scenarioScore:  null,
+        quizScore:      quizScoreMap[moduleId]      ?? null,
+        challengeScore: null,   // challenge history is not tracked in the export format
+        scenarioScore:  scenarioScoreMap[moduleId]  ?? null,
         updatedAt:      now,
       }))
       if (competencyEntries.length > 0) await db.competency.bulkPut(competencyEntries)
